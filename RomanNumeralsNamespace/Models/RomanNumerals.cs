@@ -45,47 +45,29 @@
         {
             if (number >= 4000) throw new ArgumentException($"Numbers equal or greater than 4000 are not allowed");
 
+            Numeral[] multiples = { AllNumerals.GetNumeral('M'), AllNumerals.GetNumeral('C'), AllNumerals.GetNumeral('X') };
             int multiplesOfTen = number / 10;
             int multiplesProgression = 0;
             int remainder = number % 10;
             string numeral = "";
 
-            int i;
-            if (multiplesOfTen >= 100)
+            for (var i = 0; i < multiples.Length; i++)
             {
-                for (i = 0; i < multiplesOfTen / 100; i++)
+                if (multiplesOfTen >= multiples[i].Value / 10)
                 {
-                    numeral = numeral + "M";
-                    multiplesProgression += 100;
-                }
+                    for (var j = 0; j < multiplesOfTen / (multiples[i].Value / 10); j++)
+                    {
+                        numeral = numeral + multiples[i].Letter;
+                        multiplesProgression += multiples[i].Value / 10;
+                    }
 
-                multiplesOfTen -= multiplesProgression;
-            }
-
-            multiplesProgression = 0;
-            if (multiplesOfTen >= 10)
-            {
-                for (i = 0; i < multiplesOfTen / 10; i++)
-                {
-                    numeral = numeral + "C";
-                    multiplesProgression += 10;
-                }
-
-                multiplesOfTen -= multiplesProgression;
-            }
-
-            multiplesProgression = 0;
-            if (multiplesOfTen > 0)
-            {
-                for (i = 0; i < multiplesOfTen; i++)
-                {
-                    numeral = numeral + "X";
-                    multiplesProgression++;
+                    multiplesOfTen -= multiplesProgression;
+                    multiplesProgression = 0;
                 }
             }
 
             if (remainder > 0)
-                for (i = 0; i < remainder; i++)
+                for (var i = 0; i < remainder; i++)
                     numeral = numeral + "I";
 
             return numeral;
