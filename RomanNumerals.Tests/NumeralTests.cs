@@ -108,7 +108,11 @@ namespace RomanNumeralsTests
         [Test]
         public void IntToNumeral_Test()
         {
-            RomanNumerals.IntToNumeral(3562).Should().Be("MMMCCCCCXXXXXXII");
+            List<int> t = new List<int>();
+            for (int i = 0; i < 3999; i++)
+            {
+                RomanNumerals.NumeralToInt(RomanNumerals.IntToNumeral(i + 1)).Should().Be(i + 1);
+            }
         }
     }
 }

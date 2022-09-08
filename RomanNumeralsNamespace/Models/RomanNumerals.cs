@@ -45,37 +45,65 @@
         {
             if (number >= 4000) throw new ArgumentException($"Numbers equal or greater than 4000 are not allowed");
 
-            Numeral[] multiples = { AllNumerals.GetNumeral('M'), AllNumerals.GetNumeral('C'), AllNumerals.GetNumeral('X') };
-            int multiplesOfTen = number / 10;
-            int multiplesProgression = 0;
+            Numeral[] powers = { AllNumerals.GetNumeral('M'), AllNumerals.GetNumeral('C'), AllNumerals.GetNumeral('X'), AllNumerals.GetNumeral('I') };
+            int powerUnits = number / 10;
+            int unitsProgression = 0;
             int remainder = number % 10;
             string numeral = "";
 
-            for (var i = 0; i < multiples.Length; i++)
+            for (var i = 0; i < powers.Length; i++)
             {
-                if (multiplesOfTen >= multiples[i].Value / 10)
-                {
-                    for (var j = 0; j < multiplesOfTen / (multiples[i].Value / 10); j++)
-                    {
-                        numeral = numeral + multiples[i].Letter;
-                        multiplesProgression += multiples[i].Value / 10;
-                    }
+                powerUnits -= unitsProgression;
+                unitsProgression = 0;
 
-                    multiplesOfTen -= multiplesProgression;
-                    multiplesProgression = 0;
+                if (powerUnits >= powers[i].Value / 10 || powers[i].Letter == 'I')
+                {
+                    int nCurrentMultiples = (powers[i].Letter == 'I')? remainder : powerUnits / (powers[i].Value / 10);
+                    if (i > 0)
+                    {
+                        //this means that we are not in the "M" power, so we can handle the 5X numerals
+                        if (nCurrentMultiples == 4)
+                        {
+                            numeral = numeral + powers[i].Letter;
+                            unitsProgression -= powers[i].Value / 10;
+                        }
+                        
+                        if (nCurrentMultiples == 5 || nCurrentMultiples == 4 || (nCurrentMultiples > 5 && nCurrentMultiples < 9))
+                        {
+                            numeral = numeral + AllNumerals.GetNumeralByValue(powers[i].Value * 5).Letter;
+                            unitsProgression += powers[i].Value * 5 / 10;
+                        }
+                        
+                        if (nCurrentMultiples > 5 && nCurrentMultiples < 9)
+                        {
+                            for (var j = 0; j < nCurrentMultiples - 5; j++)
+                            {
+                                numeral = numeral + powers[i].Letter;
+                                unitsProgression += powers[i].Value / 10;
+                            }
+                        }
+                    }
+                    
+                    if (nCurrentMultiples < 4)
+                    {
+                        for (var j = 0; j < nCurrentMultiples; j++)
+                        {
+                            numeral = numeral + powers[i].Letter;
+                            unitsProgression += powers[i].Value / 10;
+                        }
+                    }
+                    else if(nCurrentMultiples == 9)
+                    {
+                        numeral = numeral + powers[i].Letter + powers[i - 1].Letter;
+                        unitsProgression += powers[i].Value * 9 / 10;
+                    }
                 }
             }
-
-            if (remainder > 0)
-                for (var i = 0; i < remainder; i++)
-                    numeral = numeral + "I";
-
+            
             return numeral;
         }
 
         //--------------- PRIVATE METHODS ---------------
-        //private static 
-        
         private static void CheckFormat(List<Numeral> number)
         {
             //Check for more letter repetitions than allowed. For example, "VV" or "XXXXX"
